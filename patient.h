@@ -29,7 +29,9 @@ void print_patient(Pacient *patient);
 
 void escrever_arquivo(Pacient *patient,FILE *file);
 
-//void ll_csv(FILE *file,LinkedList *l);
+int ll_nome_is_in(LinkedList *l, char *nome);
+
+int ll_cpf_is_in(LinkedList *l,char *cpf);
 
 //int verificar_csv_vazio(FILE *file);//sla se precisa
 

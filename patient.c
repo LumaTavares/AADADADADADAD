@@ -88,9 +88,6 @@ void print_patient(Pacient *patient)
 void escrever_arquivo(Pacient *patient,FILE *file){
     fprintf(file, "%d,%s,%s,%s,%s\n", patient->id, patient->cpf, patient->name, patient->age, patient->year);
 }
-ll_csv(FILE *file,LinkedList *l){
-    
-}
 // Function to check whether the linked list is empty.
 int ll_is_empty(LinkedList *l)
 {
@@ -110,16 +107,41 @@ int get_id(Pacient *pacient)
 {
     return pacient->id;
 }
-void ll_print(LinkedList *l)
+
+int ll_nome_is_in(LinkedList *l, char *nome)//verifica se existem os nomes na lista
 {
-    for (ListNode *p = l->first; p != NULL; p = p->next)
-    {   
-        if (ll_is_empty(l)) {
-        printf("The list is empty.\n");
-        return;
-        }
-        print_patient(p->info);
-        
+    ListNode *p = l->first;
+    while (p != NULL)
+    {
+        if (strstr(p->info->name, nome) != NULL){//nome pode está está contindo na string
+            print_patient(p->info);}
+        p = p->next;
     }
-    printf("\n"); // Print a newline character to separate the output.
+    return 0;
 }
+
+int ll_cpf_is_in(LinkedList *l,char *cpf){//veriica se o cpf existe
+    ListNode *p = l->first;
+    while (p != NULL)
+    {
+        if (strcmp(p->info->cpf, cpf) == 0){ //cpf precisam ser iguais
+            print_patient(p->info);}
+        p = p->next;
+    }
+    return 0;
+}
+
+
+void ll_print(LinkedList *l)
+    {
+        for (ListNode *p = l->first; p != NULL; p = p->next)
+        {   
+            if (ll_is_empty(l)) {
+            printf("The list is empty.\n");
+            return;
+            }
+            print_patient(p->info);
+            
+        }
+        printf("\n"); // Print a newline character to separate the output.
+    }

@@ -23,6 +23,8 @@ int main(void)
     char escolha;
     int sair = 0;
     char opcao_menu;
+    char nome[100];
+    char cpf[12];
 
     while(sair == 0)
     {
@@ -37,8 +39,34 @@ int main(void)
         scanf(" %c", &opcao_menu);
 
         if (opcao_menu == '1')
-        {
-            /* Consulta */
+        {   
+
+            int opcao;
+            printf("deseja procurar o úsuario pelo cpf ou nome?\n");
+            printf("para nome digite 1 e cpf 2\n");
+            scanf("%d", &opcao);
+            if(opcao==1){
+                printf("digite o nome desejado:\n ");
+        
+                // Garantir que qualquer caractere de nova linha remanescente seja consumido
+                getchar();  // Remove o '\n' do buffer
+
+                fgets(nome, sizeof(nome), stdin); // Lê o nome completo, incluindo espaços
+                nome[strcspn(nome, "\n")] = 0;    // Remove o '\n' no final, caso exista
+                ll_nome_is_in(list,nome);
+            }if(opcao==2){
+                printf("digite o cpf desejado:\n ");
+        
+                // Garantir que qualquer caractere de nova linha remanescente seja consumido
+                getchar();  // Remove o '\n' do buffer
+
+                fgets(cpf, sizeof(cpf), stdin); // Lê o nome completo, incluindo espaços
+                cpf[strcspn(cpf, "\n")] = 0;    // Remove o '\n' no final, caso exista
+                ll_cpf_is_in(list,cpf);
+
+            }else{
+                printf("opcap invalida\n");
+            }
         }
         if (opcao_menu == '2')
         {
