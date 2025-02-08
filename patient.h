@@ -17,7 +17,7 @@ Pacient* new_pacient(int id);
 // Insert an element at the beginning of the linked list
 void ll_insert(LinkedList *l, Pacient *pacients);
 
-// Check whether the linked list is empty
+// Check whether the linked list is emptys
 int ll_is_empty(LinkedList *l);
 
 // Display all elements of the linked list
@@ -27,11 +27,15 @@ int get_id(Pacient *pacient);
 
 void print_patient(Pacient *patient);
 
-void escrever_arquivo(Pacient *patient,FILE *file);
+int escrever_arquivo_csv(Pacient *patient);
 
 int ll_nome_is_in(LinkedList *l, char *nome);
 
 int ll_cpf_is_in(LinkedList *l,char *cpf);
+
+int contar_id();
+
+int inserir_dados_csv(LinkedList *l);
 
 //int verificar_csv_vazio(FILE *file);//sla se precisa
 

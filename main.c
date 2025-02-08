@@ -4,22 +4,15 @@
 #include <string.h>
 #include <time.h>
 
-// Declaração da função escrever_arquivo
-void escrever_arquivo(Pacient *patient, FILE *file);
 
-int id = 1;
-
+int id;
 int main(void)
 {  
     LinkedList* list = ll_create();
     const char *filename = "bd_paciente.csv";
+    inserir_dados_csv(list);
+    id=contar_id(filename);
 
-    FILE *file = fopen(filename, "a");
-
-    if (file == NULL) {
-        printf("Erro ao abrir o arquivo!\n");
-        return 1;
-    }
     char escolha;
     int sair = 0;
     char opcao_menu;
@@ -85,8 +78,7 @@ int main(void)
             if (escolha == 'S')
             {
                 ll_insert(list, patient);
-                escrever_arquivo(patient, file);
-                fflush(file);  // Garante que o conteúdo seja gravado imediatamente no arquivo
+                escrever_arquivo_csv(patient);
                 printf("Registro atualizado com sucesso.\n");
                 id++;
             }
@@ -102,6 +94,5 @@ int main(void)
         printf("\n");
     }
 
-    fclose(file);  // Fechar o arquivo após terminar a manipulação
     return 0;
 }

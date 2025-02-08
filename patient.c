@@ -85,9 +85,6 @@ void print_patient(Pacient *patient)
    printf("Patient ID: %d, CPF: %s, Name: %s, Idade: %s, Data_Cadastro: %s\n", patient->id, patient->cpf, patient->name, patient->age,patient->year); // Print patient details
 }
 
-void escrever_arquivo(Pacient *patient,FILE *file){
-    fprintf(file, "%d,%s,%s,%s,%s\n", patient->id, patient->cpf, patient->name, patient->age, patient->year);
-}
 // Function to check whether the linked list is empty.
 int ll_is_empty(LinkedList *l)
 {
@@ -144,4 +141,100 @@ void ll_print(LinkedList *l)
             
         }
         printf("\n"); // Print a newline character to separate the output.
+}
+
+int contar_id() {
+    char ch;
+    int line_count = 0;
+    FILE *file;
+    
+    // Abrir o arquivo CSV
+    file = fopen("bd_paciente.csv", "r");
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+            return -1; // Retorne um valor de erro apropriado
+     }
+
+    // Ler o arquivo caractere por caractere
+     while ((ch = fgetc(file)) != EOF) {
+        // Incrementar a contagem sempre que encontrar uma nova linha
+        if (ch == '\n') {
+               line_count++;
+         }
+      }
+    
+    // Fechar o arquivo
+    line_count++;
+    fclose(file);
+    return line_count;
+}
+
+int escrever_arquivo_csv(Pacient *patient){
+    FILE *file;
+    file = fopen("bd_paciente.csv", "a");
+
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return 1;
     }
+
+    fprintf(file, "%d,%s,%s,%s,%s\n", patient->id, patient->cpf, patient->name, patient->age, patient->year);
+    fclose(file);  // Fechar o arquivo após terminar a manipulação
+    return 0;
+}
+
+
+int inserir_dados_csv(LinkedList *l) {
+    FILE *file = fopen("bd_paciente.csv", "r");  // Modo de leitura do arquivo
+    if (file == NULL) {
+        printf("Banco de dados vazio");
+        return 1;  // Retorna erro se não for possível abrir o arquivo
+    }
+
+    char line[1024];  // Buffer para armazenar cada linha do arquivo
+
+    // Ler e ignorar a primeira linha (cabeçalho)
+    fgets(line, sizeof(line), file);
+
+    // Ler o arquivo linha por linha
+    while (fgets(line, sizeof(line), file)) {
+        Pacient *patient = malloc(sizeof(Pacient));  // Alocar memória para o paciente
+        if (patient == NULL) {
+            printf("Erro ao alocar memória para paciente!\n");
+            fclose(file);  // Fechar o arquivo antes de retornar
+            return 1;  // Retorna erro se não for possível alocar memória
+        }
+
+        // Usando strtok para separar os valores na linha
+        char *token = strtok(line, ",");  // Lê o primeiro valor (id)
+        if (token != NULL) {
+            patient->id = atoi(token);  // Converte o id para inteiro
+        }
+
+        token = strtok(NULL, ",");  // Lê o CPF
+        if (token != NULL) {
+            strncpy(patient->cpf, token, sizeof(patient->cpf) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê o nome
+        if (token != NULL) {
+            strncpy(patient->name, token, sizeof(patient->name) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê a idade
+        if (token != NULL) {
+            strncpy(patient->age, token, sizeof(patient->age) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê o ano
+        if (token != NULL) {
+            strncpy(patient->year, token, sizeof(patient->year) - 1);
+        }
+
+        // Inserir o paciente na lista vinculada
+        ll_insert(l, patient); 
+    }
+
+    fclose(file);  // Fechar o arquivo após a leitura
+    return 0;  // Retorna sucesso
+}
