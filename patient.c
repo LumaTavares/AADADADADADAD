@@ -270,6 +270,7 @@ int ll_id_is_in(LinkedList *l,int id){//veriica se o id existe
     {
         if (p->info->id==id){ //id precisam ser iguais
             print_patient(p->info);}
+            return 1;
         p = p->next;
     }
     return 0;
@@ -331,7 +332,7 @@ int inserir_dados_csv(LinkedList *l) {
     char line[1024];  // Buffer para armazenar cada linha do arquivo
 
     // Ler e ignorar a primeira linha (cabeçalho)
-    fgets(line, sizeof(line), file);
+    //fgets(line, sizeof(line), file);
 
     // Ler o arquivo linha por linha
     while (fgets(line, sizeof(line), file)) {
@@ -416,7 +417,6 @@ int csv_remove(LinkedList *l, int id){
         printf("Erro ao abrir o arquivo para escrita.\n");
         return 1;
     }
-    fprintf(file,"ID,CPF,Nome,Idade,Data_cadastro\n");
 
     ListNode *p = l->first;
     
