@@ -60,7 +60,7 @@ char *formatar_cpf(Pacient *patient) {
 
 // Função responsável para a criação de um novo paciente.
 Pacient* new_pacient(int id,LinkedList *l) {
-    char cpf[15];
+    //char cpf[15];
     Pacient* patient = (Pacient*)malloc(sizeof(Pacient));
     assert(patient != NULL);            // Garante que a alocação de memória foi bem-sucedida
 
