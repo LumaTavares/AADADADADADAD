@@ -67,4 +67,6 @@ int ll_id_is_in(LinkedList *l,int id);
 //Definição da função se o paciente está contido na lista ou não
 Pacient* ll_is_in(LinkedList *l, int v);
 
+long get_file_size(const char *filename);
+
 #endif

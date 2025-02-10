@@ -15,6 +15,11 @@ int main(void)
         printf("Erro ao abrir o arquivo!\n");
         return 1;
     }
+
+    if(get_file_size("bd_paciente.csv")==0){
+        fprintf(filename,"ID,CPF,Nome,Idade,Data_Cadastro\n");
+    }
+
     inserir_dados_csv(list);
     id = random_id(list);
 
@@ -86,7 +91,7 @@ int main(void)
         scanf("%d", &excluir_id);
         getchar(); // Limpa o buffer
         
-        if (ll_id_is_in(list, excluir_id) == 0) {
+        if (ll_id_is_in(list, excluir_id)  == 1) {
             printf("Tem certeza de que deseja excluir o registro abaixo? (S/N): ");
             scanf(" %c", &escolha);
             getchar(); // Limpa o buffer

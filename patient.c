@@ -332,7 +332,7 @@ int inserir_dados_csv(LinkedList *l) {
     char line[1024];  // Buffer para armazenar cada linha do arquivo
 
     // Ler e ignorar a primeira linha (cabeçalho)
-    //fgets(line, sizeof(line), file);
+    fgets(line, sizeof(line), file);
 
     // Ler o arquivo linha por linha
     while (fgets(line, sizeof(line), file)) {
@@ -417,6 +417,7 @@ int csv_remove(LinkedList *l, int id){
         printf("Erro ao abrir o arquivo para escrita.\n");
         return 1;
     }
+    fprintf(file,"ID,CPF,Nome,Idade,Data_Cadastro\n");
 
     ListNode *p = l->first;
     
@@ -431,6 +432,21 @@ int csv_remove(LinkedList *l, int id){
     return 0;
 
 }
+
+long get_file_size(const char *filename) {
+    FILE *file = fopen(filename, "rb"); // Abre o arquivo no modo binário
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo.\n");
+        return -1; // Retorna -1 em caso de erro
+    }
+
+    fseek(file, 0, SEEK_END); // Move o cursor para o final do arquivo
+    long size = ftell(file);  // Obtém a posição atual (tamanho do arquivo)
+    fclose(file); // Fecha o arquivo
+
+    return size;
+}
+
 
 // char linha[256];
 //     int line_count = 1;
