@@ -4,14 +4,15 @@
 #include <string.h>
 #include <time.h>
 #include <assert.h>
+#include <ctype.h>
 
 //Definição da estrutura que representa o paciente
 struct pacient
 {
     int id;             // Variável responsável pelo ID do paciente.
     char cpf[15];       // Variável responsável pelo CPF do paciente.
-    char name[100];     // Variável responsável pelo nome do paciente.
-    char age[5];        // Variável responsável pela idade do paciente
+    char name[100];     // Variável responsável pelo nome do paciente. 
+    char age[5];        // Variável responsável pela idade do paciente. 
     char year[20];      // Variável responsável pela data de cadastro do paciente. **MUDAR NOME DA VARIÁVEL
 };
 
@@ -37,8 +38,9 @@ LinkedList *ll_create()
 }                                               
 
 //Função responsável pela formatação da string CPF (Ex: 12345678901 -> 123.456.789-01).
-void formatar_cpf(Pacient *patient) {
-    char format_cpf[15];    //String que armazena o cpf formatado.
+//void formatar_cpf(Pacient *patient)
+char *formatar_cpf(Pacient *patient) {
+    static char format_cpf[15];    //String que armazena o cpf formatado.
     int j = 0;              // Índice para a variável format_cpf.
     
     for (int i = 0; i < 11; i++) {
@@ -51,11 +53,14 @@ void formatar_cpf(Pacient *patient) {
     }
     format_cpf[j] = '\0';
 
-    strcpy(patient->cpf, format_cpf);  // Copia a string contida em "format_cpf" para o campo "cpf" da estrutura do paciente.
+    //strcpy(patient->cpf, format_cpf);  // Copia a string contida em "format_cpf" para o campo "cpf" da estrutura do paciente.
+    return format_cpf;
 }
+    
 
 // Função responsável para a criação de um novo paciente.
-Pacient* new_pacient(int id) {
+Pacient* new_pacient(int id,LinkedList *l) {
+    char cpf[15];
     Pacient* patient = (Pacient*)malloc(sizeof(Pacient));
     assert(patient != NULL);            // Garante que a alocação de memória foi bem-sucedida
 
@@ -64,9 +69,13 @@ Pacient* new_pacient(int id) {
 
     // Entrada do CPF
     printf("Digite o CPF: ");
-    scanf("%11s", patient->cpf);        // Limita a entrada para evitar buffer overflow
+    scanf("%11s", patient->cpf);// Limita a entrada para evitar buffer overflow
+    if (ll_cpf_is_in(l, patient->cpf) == 1) {
+        printf("Erro: CPF ja existe\n");
+        return NULL;  // Retorna da função
+    }
     getchar();                          // Consumir o '\n' do buffer
-    formatar_cpf(patient);
+    //formatar_cpf(patient);
 
     // Entrada do Nome
     printf("Digite o Nome: ");
@@ -87,66 +96,68 @@ Pacient* new_pacient(int id) {
     return patient;
 }
 
+//Função responsável pela funcionalidade de atualizar o paciente.
 Pacient* update_patient(LinkedList *l, int id)
 {
+    
     Pacient* patient = (Pacient*)malloc(sizeof(Pacient));
     assert(patient != NULL);  // Garante que a alocação de memória foi bem-sucedida
 
-    printf("Digite o novo valor para os campos CPF (apenas dígitos), Nome, Idade e Data_Cadastro (para manter o valor atual de um campo, digite '-'):\n");
+    printf("Digite o novo valor para os campos CPF (apenas digitos), Nome, Idade e Data_Cadastro (para manter o valor atual de um campo, digite '-'):\n");
     
-    patient = ll_is_in(l, id);  // Busca e seleciona o paciente na lista, usando o ID fornecido.
-    if (patient != NULL) {
+    patient = ll_is_in(l,id);                //Busca e seleciona o paciente na lista tendo como critério o ID fornecido.
+    if (patient != NULL){
         char new_cpf[15];
         char new_name[100];
         char new_age[5];
         char new_year[20];
 
-        // Entrada de dados do novo CPF para atualização
-        scanf("%11s", new_cpf); 
-        getchar();  // Limpa o '\n' do buffer deixado pelo scanf
+        scanf("%11s", new_cpf);              // Entrada de dados do novo cpf para atualização.
+        getchar();
+        if (ll_cpf_is_in(l, new_cpf) == 1) {
+            printf("Erro: CPF ja existe\n");
+            return NULL;  // Retorna da função
+        }                           // Consume o '\n'(Limpeza do Buffer)
 
-        // Verifica se o novo CPF já existe
-        if (ll_cpf_is_in(l, new_cpf)) {
-            printf("CPF JA EXISTENTE.\n");
-        }
-        
-        // Verifica se o usuário deseja atualizar o CPF
-        if (strcmp(new_cpf, "-") != 0) {
+        if (strcmp(new_cpf, "-") != 0)          // Verificação caso o usuário deseja ou não atualizar o CPF do paciente.
+        {
             strcpy(patient->cpf, new_cpf);
-            formatar_cpf(patient);  // Formata o CPF (certifique-se de que esta função está correta)
+            //formatar_cpf(patient);
         }
 
-        // Entrada de dados do novo nome
-        fgets(new_name, sizeof(new_name), stdin);  // Usando fgets para o nome, que permite ler espaços
-        new_name[strcspn(new_name, "\n")] = 0;  // Remove o '\n' deixado pelo fgets
-        if (strcmp(new_name, "-") != 0) {
+        fgets(new_name, sizeof(new_name), stdin);       // Entrada de dados do novo cpf para atualização.
+        new_name[strcspn(new_name, "\n")] = 0;          // Remove o '\n' (Limpeza do Buffer)
+        if (strcmp(new_name, "-") != 0)                 // Verificação caso o usuário deseja ou não atualizar o nome do paciente.
+        {
             strcpy(patient->name, new_name);
         }
 
-        // Entrada de dados da nova idade
-        scanf("%4s", new_age);  
-        getchar();  // Limpa o '\n' do buffer após o scanf
-        if (strcmp(new_age, "-") != 0) {
+        scanf("%4s", new_age);                          // Entrada de dados da nova idade para atualização.
+        getchar();                                      //Remove o '\n' (Limpeza do Buffer)
+        if (strcmp(new_age, "-") != 0)
+        {
             strcpy(patient->age, new_age);
         }
 
-        // Entrada de dados do novo ano de cadastro
-        scanf("%11s", new_year);
-        getchar();  // Limpa o '\n' do buffer após o scanf
-        if (strcmp(new_year, "-") != 0) {
+        scanf("%11s", new_year);                        // Entrada de dados da nova data de cadastro para atualização.
+        getchar();                                      // Remove o '\n' (Limpeza do Buffer)
+        if (strcmp(new_year, "-") != 0)
+        {
             strcpy(patient->year, new_year);
         }
         
-        return patient;  // Retorna o paciente atualizado
+        return patient;     //Retorno da função update_patient.
     }
-    return NULL;  // Retorna NULL se o paciente com o ID informado não for encontrado
+    return NULL;            //Retorna NULL caso não encontre nenhum paciente com ID informado pelo usuário.
 }
 
 //Função responsável pela saída de dados formatada dos dados do paciente.
 void print_patient(Pacient *patient)
 {
-   printf("%-3s %-15s %-20s %-10s %-12s\n", "ID", "CPF", "Nome", "Idade", "Data_Cadastro"); // Print patient details
-   printf("%-3d %-15s %-20s %-10s %-12s\n", patient->id, patient->cpf, patient->name, patient->age, patient->year);
+    char *cpf_formatado;
+    cpf_formatado=formatar_cpf(patient);
+    printf("%-3s %-15s %-20s %-10s %-12s\n", "ID", "CPF", "Nome", "Idade", "Data_Cadastro"); // Print patient details
+    printf("%-3d %-15s %-20s %-10s %-12s\n", patient->id, cpf_formatado, patient->name, patient->age, patient->year);
 }
 
 // Function to check whether the linked list is empty.
@@ -202,11 +213,12 @@ int ll_cpf_is_in(LinkedList *l,char *cpf){//veriica se o cpf existe
     while (p != NULL)
     {
         if (strcmp(p->info->cpf, cpf) == 0){ //cpf precisam ser iguais
-            print_patient(p->info);}
-            return 0;//retorna 0 se achou cpf
+            print_patient(p->info);
+            return 1;
+        }
         p = p->next;
     }
-    return 1; //retorna 1 se nao
+    return 0;
 }
 
 
@@ -252,139 +264,15 @@ void ll_free(LinkedList *l)
     free(l); // Free the memory allocated for the list structure itself.
 }
 
-int escrever_arquivo_csv(Pacient *patient){
-    FILE *file;
-    file = fopen("bd_paciente.csv", "a");
-
-    if (file == NULL) {
-        printf("Erro ao abrir o arquivo!\n");
-        return 1;
-    }
-
-    fprintf(file, "%d,%s,%s,%s,%s\n", patient->id, patient->cpf, patient->name, patient->age, patient->year);
-    fclose(file);  // Fechar o arquivo após terminar a manipulação
-    return 0;
-}
-
-
-void inserir_inciaz(LinkedList *l) {
-    FILE *file = fopen("bd_paciente.csv", "r");  // Modo de leitura do arquivo
-    if (file == NULL) {
-        printf("Banco de dados vazio\n");
-        return;  // Retorna imediatamente se não for possível abrir o arquivo
-    }
-
-    char line[1024];  // Buffer para armazenar cada linha do arquivo
-
-    // Ler e ignorar a primeira linha (cabeçalho)
-    fgets(line, sizeof(line), file);
-
-    // Ler o arquivo linha por linha
-    while (fgets(line, sizeof(line), file)) {
-        // Verifica se a linha não está vazia
-        if (line[0] == '\n') {
-            continue;
-        }
-
-        Pacient *patient = malloc(sizeof(Pacient));  // Alocar memória para o paciente
-        if (patient == NULL) {
-            printf("Erro ao alocar memória para paciente!\n");
-            fclose(file);  // Fechar o arquivo antes de retornar
-            return;  // Retorna se não for possível alocar memória
-        }
-
-        // Usando strtok para separar os valores na linha
-        char *token = strtok(line, ",");  // Lê o primeiro valor (id)
-        if (token != NULL) {
-            patient->id = atoi(token);  // Converte o id para inteiro
-        }
-
-        token = strtok(NULL, ",");  // Lê o CPF
-        if (token != NULL) {
-            strncpy(patient->cpf, token, sizeof(patient->cpf) - 1);
-            patient->cpf[sizeof(patient->cpf) - 1] = '\0';  // Garante que o CPF seja corretamente terminado
-        }
-
-        token = strtok(NULL, ",");  // Lê o nome
-        if (token != NULL) {
-            strncpy(patient->name, token, sizeof(patient->name) - 1);
-            patient->name[sizeof(patient->name) - 1] = '\0';  // Garante que o nome seja corretamente terminado
-        }
-
-        token = strtok(NULL, ",");  // Lê a idade
-        if (token != NULL) {
-            strncpy(patient->age, token, sizeof(patient->age) - 1);
-            patient->age[sizeof(patient->age) - 1] = '\0';  // Garante que a idade seja corretamente terminada
-        }
-
-        token = strtok(NULL, ",");  // Lê o ano
-        if (token != NULL) {
-            strncpy(patient->year, token, sizeof(patient->year) - 1);
-            patient->year[sizeof(patient->year) - 1] = '\0';  // Garante que o ano seja corretamente terminado
-        }
-
-        // Inserir o paciente na lista vinculada
-        ll_insert(l, patient);  // A função ll_insert deve estar preparada para lidar com a inserção na lista
-    }
-
-    fclose(file);  // Fechar o arquivo após a leitura
-}
-
-
-// remover elemento da lista
-int ll_remove(LinkedList *l, int id)//lista e id 
-{
-    ListNode *p = l->first; // Pointer to the current node being examined
-    ListNode *prev = NULL;  // Pointer to the previous node
-
-    // Traverse the list
+int ll_id_is_in(LinkedList *l,int id){//veriica se o id existe
+    ListNode *p = l->first;
     while (p != NULL)
     {
-        // Check if the current node contains the element to be removed
-        if (p->info->id == id)
-        {
-            // If the element to be removed is at the beginning of the list
-            if (prev == NULL)
-                l->first = p->next; // Update the 'first' pointer to skip the first node
-            // If the element to be removed is in the middle or end of the list
-            else
-                prev->next = p->next; // Update the 'next' pointer of the previous node
-
-            
-            csv_remove(l,id);
-            free(p);  // Deallocate memory occupied by the removed node
-            printf("elemento tcha");
-            return 1; // retorna lista sem o elemento
-
-        }
-        else
-        {
-            prev = p;    // Update the 'prev' pointer
-            p = p->next; // Move to the next node
-        }
-    }
-
-    return 0; // Indicate that the element was not found
-}
-int csv_remove(LinkedList *l, int id){
-    FILE *file = fopen("bd_paciente.csv", "w");
-    if (!file) {
-        printf("Erro ao abrir o arquivo para escrita.\n");
-        return 1;
-    }
-
-    ListNode *p = l->first;
-    
-    while (p != NULL) {
-        if (p->info->id != id) {  // Escreve todos os pacientes, exceto o que queremos remover
-            fprintf(file, "%d,%s,%s,%s,%s\n", p->info->id, p->info->cpf, p->info->name, p->info->age, p->info->year);
-        }
+        if (p->info->id==id){ //id precisam ser iguais
+            print_patient(p->info);}
         p = p->next;
     }
-
-    fclose(file);
     return 0;
-
 }
 
 int random_id(LinkedList *l) {
@@ -417,14 +305,164 @@ int random_id(LinkedList *l) {
     return numero;  // Retorna o número único gerado
 }
 
-int ll_id_is_in(LinkedList *l,int id){//veriica se o id existe
-    ListNode *p = l->first;
-    while (p != NULL)
-    {
-        if (p->info->id==id){ //id precisam ser iguais
-            print_patient(p->info);}
-        p = p->next;
+int escrever_arquivo_csv(Pacient *patient){
+    //char *cpf_formatado;
+    FILE *file;
+    file = fopen("bd_paciente.csv", "a");
+
+    if (file == NULL) {
+        printf("Erro ao abrir o arquivo!\n");
+        return 1;
     }
-    printf("id não existe");
+    //cpf_formatado = formatar_cpf(patient);
+    fprintf(file, "%d,%s,%s,%s,%s\n", patient->id,patient->cpf, patient->name, patient->age, patient->year);
+    fclose(file);  // Fechar o arquivo após terminar a manipulação
     return 0;
 }
+
+
+int inserir_dados_csv(LinkedList *l) {
+    FILE *file = fopen("bd_paciente.csv", "r");  // Modo de leitura do arquivo
+    if (file == NULL) {
+        printf("Banco de dados vazio");
+        return 1;  // Retorna erro se não for possível abrir o arquivo
+    }
+
+    char line[1024];  // Buffer para armazenar cada linha do arquivo
+
+    // Ler e ignorar a primeira linha (cabeçalho)
+    fgets(line, sizeof(line), file);
+
+    // Ler o arquivo linha por linha
+    while (fgets(line, sizeof(line), file)) {
+        Pacient *patient = malloc(sizeof(Pacient));  // Alocar memória para o paciente
+        if (patient == NULL) {
+            printf("Erro ao alocar memória para paciente!\n");
+            fclose(file);  // Fechar o arquivo antes de retornar
+            return 1;  // Retorna erro se não for possível alocar memória
+        }
+
+        // Usando strtok para separar os valores na linha
+        char *token = strtok(line, ",");  // Lê o primeiro valor (id)
+        if (token != NULL) {
+            patient->id = atoi(token);  // Converte o id para inteiro
+        }
+
+        token = strtok(NULL, ",");  // Lê o CPF
+        if (token != NULL) {
+            strncpy(patient->cpf, token, sizeof(patient->cpf) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê o nome
+        if (token != NULL) {
+            strncpy(patient->name, token, sizeof(patient->name) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê a idade
+        if (token != NULL) {
+            strncpy(patient->age, token, sizeof(patient->age) - 1);
+        }
+
+        token = strtok(NULL, ",");  // Lê o ano
+        if (token != NULL) {
+            strncpy(patient->year, token, sizeof(patient->year) - 1);
+        }
+
+        // Inserir o paciente na lista vinculada
+        ll_insert(l, patient); 
+    }
+
+    fclose(file);  // Fechar o arquivo após a leitura
+    return 0;  // Retorna sucesso
+}
+
+int ll_remove(LinkedList *l, int id)//lista e id 
+{
+    ListNode *p = l->first; // Pointer to the current node being examined
+    ListNode *prev = NULL;  // Pointer to the previous node
+
+    // Traverse the list
+    while (p != NULL)
+    {
+        // Check if the current node contains the element to be removed
+        if (p->info->id == id)
+        {
+            // If the element to be removed is at the beginning of the list
+            if (prev == NULL)
+                l->first = p->next; // Update the 'first' pointer to skip the first node
+            // If the element to be removed is in the middle or end of the list
+            else
+                prev->next = p->next; // Update the 'next' pointer of the previous node
+
+            
+            csv_remove(l,id);
+            free(p);  // Deallocate memory occupied by the removed node
+            return 1; // retorna lista sem o elemento
+
+        }
+        else
+        {
+            prev = p;    // Update the 'prev' pointer
+            p = p->next; // Move to the next node
+        }
+    }
+
+    return 0; // Indicate that the element was not found
+}
+
+int csv_remove(LinkedList *l, int id){
+    FILE *file = fopen("bd_paciente.csv", "w");
+    if (!file) {
+        printf("Erro ao abrir o arquivo para escrita.\n");
+        return 1;
+    }
+    fprintf(file,"ID,CPF,Nome,Idade,Data_cadastro\n");
+
+    ListNode *p = l->first;
+    
+    while (p != NULL) {
+        if (p->info->id != id) {  // Escreve todos os pacientes, exceto o que queremos remover
+            fprintf(file, "%d,%s,%s,%s,%s\n", p->info->id, p->info->cpf, p->info->name, p->info->age, p->info->year);
+        }
+        p = p->next;
+    }
+
+    fclose(file);
+    return 0;
+
+}
+
+// char linha[256];
+//     int line_count = 1;
+//     FILE *file;
+    
+//     // Abrir o arquivo CSV
+//     file = fopen("bd_paciente.csv", "r");
+//     if (file == NULL) {
+//         printf("Erro ao abrir o arquivo.\n");
+//         return -1;         // Retorne um valor de erro apropriado
+//     }
+
+//     // Ler o arquivo linha por linha
+//     while (fgets(linha, sizeof(linha), file) != NULL) {
+//         // Remove espaços em branco do início e do fim da linha
+//         char *start = linha;
+//         while (isspace((unsigned char)*start)) {
+//             start++;
+//         }
+//         char *end = linha + strlen(linha) - 1;
+//         while (end > start && isspace((unsigned char)*end)) {
+//             end--;
+//         }
+//         *end = '\0';
+
+//         // Incrementa a contagem se a linha não estiver vazia
+//         if (strlen(start) > 0) {
+//             line_count++;
+//         }
+//     }
+
+//     // Fechar o arquivo
+//     fclose(file);
+//     printf("%d\n", line_count);
+//     return line_count;

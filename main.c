@@ -51,6 +51,7 @@ int main(void)
 
                 fgets(nome, sizeof(nome), stdin); // Lê o nome completo, incluindo espaços
                 nome[strcspn(nome, "\n")] = 0;    // Remove o '\n' no final, caso exista
+                printf("%s",nome);
                 ll_nome_is_in(list,nome);
 
             }
@@ -69,7 +70,7 @@ int main(void)
             else
             {
                 printf("\n");
-                print_menu(); //Mostra o menu
+                //print_menu(); //Mostra o menu
             }
         }
         if (opcao_menu == '2')
@@ -77,22 +78,19 @@ int main(void)
             int id_patient;
             ll_print(list);
             printf("Digite o ID do registro a ser atualizado:\n");
-            scanf("%d",&id_patient);
+            scanf(" %d",&id_patient);
             Pacient* patient = update_patient(list, id_patient);
-            printf("\n");
-            printf("Confirma os novos valores para o registro abaixo? (S/N)\n");
             print_patient(patient);
-            scanf(" %c", &escolha);  // A correção aqui é o espaço antes de %c
+            printf("Confirma os novos valores para o registro acima? (S/N) :");
+            scanf("%c", &escolha);  // A correção aqui é o espaço antes de %c
 
             if (escolha == 'S')
             {
-
-                //precisa tirar informações antigas
-                ll_remove(list,id_patient);//remover informações da lista e csv
+                ll_remove(list,id_patient);
                 ll_insert(list, patient);
                 escrever_arquivo_csv(patient);
+                fflush(filename);  // Garante que o conteúdo seja gravado imediatamente no arquivo
                 printf("Registro atualizado com sucesso.\n");
-                id++;
             }
             else
             {
@@ -100,44 +98,48 @@ int main(void)
             }
         }
         if (opcao_menu == '3')
-        {   
-            
+        {
             int excluir_id;
             printf("Digite o ID do registro a ser removido: ");
             scanf("%d",&excluir_id);
             ll_id_is_in(list,excluir_id);
             printf("Tem certeza de que deseja excluir o registro abaixo? (S/N): ");
             scanf(" %c", &escolha); 
-            if(escolha=='S'){
+            if(escolha=='S')
+            {
                 ll_remove(list, excluir_id);
-            }if(escolha=='N'){
-                printf("n");
-                printf("ação cancelada");
-                //sla o que menu
+            }
+            if(escolha=='N')
+            {
+                printf("Processo cancelado.\n");
             }
             //ll_remove(list, id);
         }
         if (opcao_menu == '4')
         {
             printf("\n");
-            Pacient* patient = new_pacient(id);
-            printf("\n");
-            printf("Confirma os novos valores para o registro abaixo? (S/N)\n");
-            print_patient(patient);
-            scanf(" %c", &escolha);  // A correção aqui é o espaço antes de %c
+            Pacient* patient = new_pacient(id,list);
+            if(patient!=NULL){
 
-            if (escolha == 'S')
-            {
-                ll_insert(list, patient);
-                escrever_arquivo_csv(patient);
-                fflush(filename);  // Garante que o conteúdo seja gravado imediatamente no arquivo
-                printf("O registro foi inserido com sucesso.\n");
-                id++;
-            }
-            else
-            {
-                // invocar a função que plota o menu
-            }
+            
+                printf("\n");
+                printf("Confirma os novos valores para o registro abaixo? (S/N)\n");
+                print_patient(patient);
+                scanf(" %c", &escolha);  // A correção aqui é o espaço antes de %c
+
+                if (escolha == 'S')
+                {
+                    ll_insert(list, patient);
+                    escrever_arquivo_csv(patient);
+                    fflush(filename);  // Garante que o conteúdo seja gravado imediatamente no arquivo
+                    printf("O registro foi inserido com sucesso.\n");
+                    id=random_id(list);
+                }
+                else
+                {
+                    // invocar a função que plota o menu
+                }
+                }
         }
         if (opcao_menu == '5')
         {

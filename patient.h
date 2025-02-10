@@ -14,19 +14,16 @@ typedef struct pacient Pacient;
 LinkedList* ll_create();
 
 //Definição da função de criação do paciente.
-Pacient* new_pacient(int id);
+Pacient* new_pacient(int id,LinkedList *l); //mexi
 
 //Definição da função de impressão da interface do menu.
 void print_menu();
 
 //Definição da função de formatação de string correspondente ao CPF do paciente
-void formatar_cpf(Pacient *patient);
+char *formatar_cpf(Pacient *patient);
 
 //Definição da função de atualização do paciente
 Pacient* update_patient(LinkedList *l, int id);
-
-//Definição da função de remoção de um elemento da lista encadeada.
-int ll_remove(LinkedList *l, int v);
 
 //Definição da função de desalocar memória da lista encadeada
 void ll_free(LinkedList *l);
@@ -52,18 +49,22 @@ int ll_nome_is_in(LinkedList *l, char *nome);
 //Definição da função que faz verficação se o cpf do paciente está contido na lista ou não
 int ll_cpf_is_in(LinkedList *l,char *cpf);
 
-void inserir_inciaz(Pacient *patient);
+int escrever_arquivo_csv(Pacient *patient);
+
+// int contar_id();
+
+int random_id(LinkedList *l);
 
 int inserir_dados_csv(LinkedList *l);
+
+//Definição da função de remoção de um elemento da lista encadeada.
+int ll_remove(LinkedList *l, int id);//lista e id 
+
+int csv_remove(LinkedList *l, int id);
+
+int ll_id_is_in(LinkedList *l,int id);
 
 //Definição da função se o paciente está contido na lista ou não
 Pacient* ll_is_in(LinkedList *l, int v);
 
-int csv_remove(LinkedList *l, int id);
-
-int random_id(LinkedList *l);
-
-int ll_remove(LinkedList *l, int id);
-
-int ll_id_is_in(LinkedList *l,int id);
 #endif
